@@ -5,6 +5,8 @@ var HOST = {
 };
 
 var redis = require("../../index");
+redis.debug_mode = process.env.DEBUG ? JSON.parse(process.env.DEBUG) : false;
+
 var nodeAssert = require("../lib/nodeify-assertions");
 var async = require("async");
 
