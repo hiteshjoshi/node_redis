@@ -46,26 +46,22 @@ describe("A node_redis client", function () {
                             client.on("connect", function on_connect() {
                                 async.parallel([function (cb) {
                                     client.get("recon 1", function (err, res) {
-                                        var a = nodeAssert.isString("one");
-                                        a(err, res);
+                                        nodeAssert.isString("one")(err, res);
                                         cb();
                                     });
                                 }, function (cb) {
                                     client.get("recon 1", function (err, res) {
-                                        var a = nodeAssert.isString("one");
-                                        a(err, res);
+                                        nodeAssert.isString("one")(err, res);
                                         cb();
                                     });
                                 }, function (cb) {
                                     client.get("recon 2", function (err, res) {
-                                        var a = nodeAssert.isString("two");
-                                        a(err, res);
+                                        nodeAssert.isString("two")(err, res);
                                         cb();
                                     });
                                 }, function (cb) {
                                     client.get("recon 2", function (err, res) {
-                                        var a = nodeAssert.isString("two");
-                                        a(err, res);
+                                        nodeAssert.isString("two")(err, res);
                                         cb();
                                     });
                                 }], function (err, results) {
