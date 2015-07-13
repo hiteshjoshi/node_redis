@@ -33,6 +33,13 @@ module.exports = {
         };
     },
 
+    isNotError: function () {
+        return function (err, results) {
+            assert.strictEqual(err, null, "expected success, got an error: " + err);
+            return true;
+        };
+    },
+
     isType: {
         number: function () {
             return function (err, results) {

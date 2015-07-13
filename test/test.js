@@ -938,27 +938,6 @@ tests.socket_nodelay = function () {
     c3.on("ready", ready_check);
 };
 
-tests.reconnect_select_db_after_pubsub = function() {
-    var name = "reconnect_select_db_after_pubsub";
-
-    client.select(test_db_num);
-    client.set(name, "one");
-    client.subscribe('ChannelV', function (err, res) {
-        client.stream.destroy();
-    });
-
-    client.on("reconnecting", function on_recon(params) {
-        client.on("ready", function on_connect() {
-            client.unsubscribe('ChannelV', function (err, res) {
-                client.get(name, require_string("one", name));
-                client.removeListener("connect", on_connect);
-                client.removeListener("reconnecting", on_recon);
-                next(name);
-            });
-        });
-    });
-};
-
 tests.select_error_emits_if_no_callback = function () {
     var prev = client.listeners("error")[0];
     client.removeListener("error", prev);
