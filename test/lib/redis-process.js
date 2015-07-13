@@ -1,19 +1,23 @@
 var cp = require('child_process');
 
 module.exports = {
-    start: function (done) {
-        var process = cp.spawn("redis-server");
+    start: function (done, isSocket) {
+        var confFile = isSocket ? "test/conf/redis-socket.conf" : "test/conf/redis.conf";
+        var redis = cp.spawn("redis-server", [confFile]);
 
-        process.once('err', done);
-        process.stdout.once('data', function (data) {
-            process.removeListener('err', done);
+        redis.once('err', done);
+        setTimeout(function (data) {
+            redis.removeListener('err', done);
             done();
-        });
+        }, 1000);
 
         return {
-            stop: function () {
-                process.kill("SIGINT");
+            stop: function (done) {
+                redis.once("exit", function () {
+                    done();
+                });
+                redis.kill("SIGINT");
             }
         };
-    },
+    }
 };
