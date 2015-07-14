@@ -1371,19 +1371,6 @@ tests.DBSIZE = function () {
     client.DBSIZE([], last(name, require_number_pos("DBSIZE")));
 };
 
-tests.GET_1 = function () {
-    var name = "GET_1";
-    client.set(["get key", "get val"], require_string("OK", name));
-    client.GET(["get key"], last(name, require_string("get val", name)));
-};
-
-tests.GET_2 = function() {
-    var name = "GET_2";
-
-    // tests handling of non-existent keys
-    client.GET('this_key_shouldnt_exist', last(name, require_null(name)));
-};
-
 tests.GETSET = function () {
     var name = "GETSET";
     client.set(["getset key", "getset val"], require_string("OK", name));
