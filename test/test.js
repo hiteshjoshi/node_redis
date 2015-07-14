@@ -1384,13 +1384,6 @@ tests.GET_2 = function() {
     client.GET('this_key_shouldnt_exist', last(name, require_null(name)));
 };
 
-tests.SET = function () {
-    var name = "SET";
-    client.SET(["set key", "set val"], require_string("OK", name));
-    client.get(["set key"], last(name, require_string("set val", name)));
-    client.SET(["set key", undefined], require_error(name));
-};
-
 tests.GETSET = function () {
     var name = "GETSET";
     client.set(["getset key", "getset val"], require_string("OK", name));
