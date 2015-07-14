@@ -1371,13 +1371,6 @@ tests.DBSIZE = function () {
     client.DBSIZE([], last(name, require_number_pos("DBSIZE")));
 };
 
-tests.GETSET = function () {
-    var name = "GETSET";
-    client.set(["getset key", "getset val"], require_string("OK", name));
-    client.GETSET(["getset key", "new getset val"], require_string("getset val", name));
-    client.get(["getset key"], last(name, require_string("new getset val", name)));
-};
-
 tests.MGET = function () {
     var name = "MGET";
     client.mset(["mget keys 1", "mget val 1", "mget keys 2", "mget val 2", "mget keys 3", "mget val 3"], require_string("OK", name));
