@@ -47,7 +47,7 @@ describe("The 'set' method", function () {
                     });
                 });
 
-                it("throws an error if redis is not connected", function (done) {
+                it("reports an error", function (done) {
                     client.set(key, value, function (err, res) {
                         assert.equal(err.message, 'Redis connection gone from end event.');
                         done();
@@ -83,7 +83,7 @@ describe("The 'set' method", function () {
                         });
                     });
 
-                    describe("with undefined 'key' parameter", function () {
+                    describe("with undefined 'key' and missing 'value' parameter", function () {
                         it("reports an error", function (done) {
                             client.set(undefined, function (err, res) {
                                 nodeAssert.isError()(err, null);
@@ -93,7 +93,7 @@ describe("The 'set' method", function () {
                     });
 
                     describe("with undefined 'key' and defined 'value' parameters", function () {
-                        it("throws an error", function () {
+                        it("reports an error", function () {
                             client.set(undefined, value, function (err, res) {
                                 nodeAssert.isError()(err, null);
                                 done();
@@ -115,7 +115,7 @@ describe("The 'set' method", function () {
                         });
                     });
 
-                    describe("with undefined 'key' parameter", function () {
+                    describe("with undefined 'key' and missing 'value' parameter", function () {
                         it("does not emit an error", function (done) {
                             this.timeout(50);
 
