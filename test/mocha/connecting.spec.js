@@ -5,16 +5,7 @@ var async = require("async");
 
 describe("A node_redis client", function () {
     function allTests(parser, ip, isSocket) {
-        var args = [];
-
-        if (!isSocket) {
-            args.push(config.PORT);
-            args.push(config.HOST[ip]);
-            args.push({ family: ip, parser: parser });
-        } else {
-            args.push(ip);
-            args.push({ parser: parser });
-        }
+        var args = config.configureClient(parser, ip, isSocket);
 
         describe("using " + parser + " and " + ip, function () {
             var client;
