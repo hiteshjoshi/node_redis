@@ -1,13 +1,6 @@
-var PORT = 6378;
-var HOST = {
-    IPv4: "127.0.0.1",
-    IPv6: "::1"
-};
-
-var redis = require("../../index");
-redis.debug_mode = process.env.DEBUG ? JSON.parse(process.env.DEBUG) : false;
-
 var nodeAssert = require("../lib/nodeify-assertions");
+var config = require("../lib/config");
+var redis = config.redis;
 var async = require("async");
 
 describe("A node_redis client", function () {
@@ -15,8 +8,8 @@ describe("A node_redis client", function () {
         var args = [];
 
         if (!isSocket) {
-            args.push(PORT);
-            args.push(HOST[ip]);
+            args.push(config.PORT);
+            args.push(config.HOST[ip]);
             args.push({ family: ip, parser: parser });
         } else {
             args.push(ip);
