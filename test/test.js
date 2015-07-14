@@ -1365,11 +1365,6 @@ tests.RENAMENX = function () {
     client.exists(["foo2"], last(name, require_number(1, name)));
 };
 
-tests.DBSIZE = function () {
-    var name = "DBSIZE";
-    client.set(['foo', 'bar'], require_string("OK", name));
-    client.DBSIZE([], last(name, require_number_pos("DBSIZE")));
-};
 
 tests.MGET = function () {
     var name = "MGET";
