@@ -4,11 +4,24 @@ var config = require("../../lib/config");
 var nodeAssert = require('../../lib/nodeify-assertions');
 var redis = config.redis;
 var RedisProcess = require("../../lib/redis-process");
-var uuid = require('uuid');
 var commands = require("../../../lib/commands");
-var sinon = require('sinon').sandbox.create();
 
-var overwritten = ['eval', 'hmset', 'multi', 'select'];
+// expected inputs and outputs for a
+// sampling of redis commands.
+var expectations = {
+  append: {
+    arguments: ['banana', 'phone'],
+    assert: function (response) {
+      assert.strictEqual(5, response)
+    }
+  },
+  auth: {
+    arguments: ['fakepass'],
+    assertError: function (err) {
+      assert.notEqual(err.message.indexOf('no password is set'), -1)
+    }
+  }
+}
 
 describe("The auto-generated methods", function () {
 
@@ -27,12 +40,12 @@ describe("The auto-generated methods", function () {
             var client;
 
             beforeEach(function (done) {
-                client = redis.createClient.apply(redis.createClient, args);
-                client.once("error", function onError(err) {
-                    done(err);
-                });
-                client.once("ready", function onReady() {
-                    done();
+                client = redis.createClient.apply(redis.createClient, config.configureClient(parser, ip));
+                client.once("error", done);
+                client.once("connect", function () {
+                    client.flushdb(function (err) {
+                        return done(err);
+                    });
                 });
             });
 
@@ -40,45 +53,23 @@ describe("The auto-generated methods", function () {
                 client.end();
             });
 
-            commands.forEach(function (method) {
-                if (overwritten.indexOf(method) > -1) {
-                    // these are in the list of generated commands but are later overwritten with
-                    // different behavior by node_redis
-                    return;
-                }
+            commands.forEach(function (command) {
+                var expected = expectations[command]
+                if (!expected) return;
+
+                var commandArgs = command.split(' ');
+                var method = commandArgs.shift();
+                [].push.apply(commandArgs, expectations[command].arguments)
 
                 describe("the " + method + " method", function () {
-                    var noop = function () { };
+                    it("calls sendCommand with whatever arguments it receives", function (done) {
+                      commandArgs.push(function (err, response) {
+                          if (expected.assert) expected.assert(response)
+                          if (expected.assertError) expected.assertError(err)
+                          return done();
+                      })
 
-                    it("calls sendCommand with whatever arguments it receives", function () {
-                        var argNum = 0;
-                        var key = uuid.v4();
-                        var value = uuid.v4();
-                        var parts = method.split(' ')
-                        var methodArgs = [key, value, noop];
-
-                        client.send_command = sinon.spy();
-
-                        client[parts[0]].apply(client, methodArgs);
-
-                        assert.strictEqual(client.send_command.called, true,
-                            "Client.send_command should have been called.");
-                        assert.strictEqual(parts[0], client.send_command.args[0][argNum],
-                            "Command name '" + parts[0] + "' should be passed as arg " +
-                            argNum + " to send_command");
-                        argNum++;
-
-                        assert.strictEqual(methodArgs.length, client.send_command.args[0][argNum].length,
-                            "The rest of the args to " + method + " should be passed as arg an array to send_command");
-                        assert.strictEqual(methodArgs[0], client.send_command.args[0][argNum][0],
-                            "Arg " + argNum + " to " + method + " should be passed as arg " +
-                            argNum + " to send_command");
-                        assert.strictEqual(methodArgs[1], client.send_command.args[0][argNum][1],
-                            "Arg " + argNum + " to " + method + " should be passed as arg " +
-                            argNum + " to send_command");
-                        assert.strictEqual(methodArgs[2], client.send_command.args[0][argNum][2],
-                            "Arg " + argNum + " to " + method + " should be passed as arg " +
-                            argNum + " to send_command");
+                      client[method].apply(client, commandArgs);
                     });
                 });
             });
@@ -90,10 +81,6 @@ describe("The auto-generated methods", function () {
         ['IPv4', 'IPv6'].forEach(function (ip) {
             allTests(parser, ip);
         })
-    });
-
-    afterEach(function () {
-        sinon.restore();
     });
 
     after(function (done) {
