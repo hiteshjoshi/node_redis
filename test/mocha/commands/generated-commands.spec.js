@@ -20,17 +20,10 @@ describe("The auto-generated methods", function () {
         });
     })
 
-    function removeMochaListener () {
-        var mochaListener = process.listeners('uncaughtException').pop();
-        process.removeListener('uncaughtException', mochaListener);
-        return mochaListener;
-    }
-
     function allTests(parser, ip) {
         var args = config.configureClient(parser, ip);
 
         describe("using " + parser + " and " + ip, function () {
-            var key, value;
             var client;
 
             beforeEach(function (done) {
@@ -55,18 +48,16 @@ describe("The auto-generated methods", function () {
                 }
 
                 describe("the " + method + " method", function () {
-                    var methodArgs;
                     var noop = function () { };
 
                     it("calls sendCommand with whatever arguments it receives", function () {
-                        key = uuid.v4();
-                        value = uuid.v4();
-
-                        var parts = method.split(' ');
                         var argNum = 0;
+                        var key = uuid.v4();
+                        var value = uuid.v4();
+                        var parts = method.split(' ')
+                        var methodArgs = [key, value, noop];
 
                         client.send_command = sinon.spy();
-                        methodArgs = [key, value, noop];
 
                         client[parts[0]].apply(client, methodArgs);
 
@@ -76,15 +67,7 @@ describe("The auto-generated methods", function () {
                             "Command name '" + parts[0] + "' should be passed as arg " +
                             argNum + " to send_command");
                         argNum++;
-                        /*
-                         * Um, except this doesn't work? The second part of the command is never sent????
-                        if (parts[1]) {
-                            assert.strictEqual(parts[1], client.send_command.args[0][argNum],
-                                "Second command '" + parts[1] + "' should be passed as arg " +
-                                argNum + " to send_command");
-                            argNum++;
-                        }
-                        */
+
                         assert.strictEqual(methodArgs.length, client.send_command.args[0][argNum].length,
                             "The rest of the args to " + method + " should be passed as arg an array to send_command");
                         assert.strictEqual(methodArgs[0], client.send_command.args[0][argNum][0],

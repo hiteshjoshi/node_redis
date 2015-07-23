@@ -63,7 +63,7 @@ describe("The 'multi' method", function () {
                     client = redis.createClient.apply(redis.createClient, args);
                     client.once("error", done);
                     client.once("connect", function () {
-                        client.del('multifoo', 'multibar', 'multifoo_8', 'multibar_8', function (err) {
+                        client.flushdb(function (err) {
                             return done(err);
                         })
                     });
