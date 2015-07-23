@@ -16,12 +16,6 @@ describe("The 'getset' method", function () {
         });
     })
 
-    function removeMochaListener () {
-        var mochaListener = process.listeners('uncaughtException').pop();
-        process.removeListener('uncaughtException', mochaListener);
-        return mochaListener;
-    }
-
     function allTests(parser, ip) {
         var args = config.configureClient(parser, ip);
 

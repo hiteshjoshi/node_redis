@@ -1,4 +1,5 @@
 var async = require("async");
+var assert = require("assert");
 var config = require("../lib/config");
 var nodeAssert = require("../lib/nodeify-assertions");
 var redis = config.redis;
@@ -44,11 +45,11 @@ describe("A node_redis client", function () {
 
                 beforeEach(function (done) {
                     client = redis.createClient.apply(redis.createClient, args);
-                    client.once("error", function onError(err) {
-                        done(err);
-                    });
-                    client.once("ready", function onReady() {
-                        done();
+                    client.once("error", done);
+                    client.once("connect", function () {
+                        client.flushdb(function (err) {
+                            return done(err);
+                        })
                     });
                 });
 
@@ -163,6 +164,29 @@ describe("A node_redis client", function () {
                                 client.stream.destroy();
                             });
                         });
+                    });
+                });
+
+                it('emits errors thrown from within an on("message") handler', function (done) {
+                    var client2 = redis.createClient.apply(redis.createClient, args);
+                    var name = 'channel';
+
+                    client2.subscribe(name, function () {
+                        client.publish(name, "some message");
+                    });
+
+                    client2.on("message", function (channel, data) {
+                        if (channel == name) {
+                            assert.equal(data, "some message");
+                            throw Error('forced exception');
+                        }
+                        return done();
+                    });
+
+                    client2.once("error", function (err) {
+                        client2.end();
+                        assert.equal(err.message, 'forced exception')
+                        return done();
                     });
                 });
             });

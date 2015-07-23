@@ -23,11 +23,14 @@
     "mocha": "^2.2.5",
     "nyc": "^3.0.0",
     "tcp-port-used": "^0.1.2",
-    "underscore": "~1.4.4",
-    "uuid": "^2.0.1"
+    "underscore": "~1.4.4"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/mranney/node_redis.git"
+  },
+  "dependencies": {
+    "sinon": "^1.15.4",
+    "uuid": "^2.0.1"
   }
 }

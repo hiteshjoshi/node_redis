@@ -121,6 +121,7 @@ next = function next(name) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 tests.IPV4 = function () {
     var ipv4addr = process.env.REDIS_PORT_6379_TCP_ADDR || "127.0.0.1";
     var ipv4Client = redis.createClient( PORT, ipv4addr, { family : "IPv4", parser: parser } );
@@ -453,29 +454,6 @@ tests.EVAL_1 = function () {
         return next(name);
     }
 
-    // test {EVAL - Lua integer -> Redis protocol type conversion}
-    client.eval("return 100.5", 0, require_number(100, name));
-    // test {EVAL - Lua string -> Redis protocol type conversion}
-    client.eval("return 'hello world'", 0, require_string("hello world", name));
-    // test {EVAL - Lua true boolean -> Redis protocol type conversion}
-    client.eval("return true", 0, require_number(1, name));
-    // test {EVAL - Lua false boolean -> Redis protocol type conversion}
-    client.eval("return false", 0, require_null(name));
-    // test {EVAL - Lua status code reply -> Redis protocol type conversion}
-    client.eval("return {ok='fine'}", 0, require_string("fine", name));
-    // test {EVAL - Lua error reply -> Redis protocol type conversion}
-    client.eval("return {err='this is an error'}", 0, require_error(name));
-    // test {EVAL - Lua table -> Redis protocol type conversion}
-    client.eval("return {1,2,3,'ciao',{1,2}}", 0, function (err, res) {
-        assert.strictEqual(5, res.length, name);
-        assert.strictEqual(1, res[0], name);
-        assert.strictEqual(2, res[1], name);
-        assert.strictEqual(3, res[2], name);
-        assert.strictEqual("ciao", res[3], name);
-        assert.strictEqual(2, res[4].length, name);
-        assert.strictEqual(1, res[4][0], name);
-        assert.strictEqual(2, res[4][1], name);
-    });
     // test {EVAL - Are the KEYS and ARGS arrays populated correctly?}
     client.eval("return {KEYS[1],KEYS[2],ARGV[1],ARGV[2]}", 2, "a", "b", "c", "d", function (err, res) {
         assert.strictEqual(4, res.length, name);

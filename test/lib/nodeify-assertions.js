@@ -1,59 +1,59 @@
 var assert = require('assert');
 
 module.exports = {
-    isNumber: function (expected) {
+    isNumber: function (expected, done) {
         return function (err, results) {
             assert.strictEqual(null, err, "expected " + expected + ", got error: " + err);
             assert.strictEqual(expected, results, expected + " !== " + results);
             assert.strictEqual(typeof results, "number", "expected a number, got " + typeof results);
-            return true;
+            if (done) return done();
         };
     },
 
-    isString: function (str) {
+    isString: function (str, done) {
         return function (err, results) {
             assert.strictEqual(null, err, "expected string '" + str + "', got error: " + err);
             assert.equal(str, results, str + " does not match " + results);
-            return true;
+            if (done) return done();
         };
     },
 
-    isNull: function () {
+    isNull: function (done) {
         return function (err, results) {
             assert.strictEqual(null, err, "expected null, got error: " + err);
             assert.strictEqual(null, results, results + " is not null");
-            return true;
+            if (done) return done();
         };
     },
 
-    isError: function () {
+    isError: function (done) {
         return function (err, results) {
             assert.notEqual(err, null, "err is null, but an error is expected here.");
-            return true;
+            if (done) return done();
         };
     },
 
-    isNotError: function () {
+    isNotError: function (done) {
         return function (err, results) {
             assert.strictEqual(err, null, "expected success, got an error: " + err);
-            return true;
+            if (done) return done();
         };
     },
 
     isType: {
-        number: function () {
+        number: function (done) {
             return function (err, results) {
                 assert.strictEqual(null, err, "expected any number, got error: " + err);
                 assert.strictEqual(typeof results, "number", results + " is not a number");
-                return true;
+                if (done) return done();
             };
         },
 
-        positiveNumber: function () {
+        positiveNumber: function (done) {
             return function (err, results) {
                 assert.strictEqual(null, err, "expected positive number, got error: " + err);
                 assert.strictEqual(true, (results > 0), results + " is not a positive number");
-                return true;
+                if (done) return done();
             };
         }
     },
