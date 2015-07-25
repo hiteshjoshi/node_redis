@@ -122,6 +122,7 @@ next = function next(name) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 tests.IPV4 = function () {
     var ipv4addr = process.env.REDIS_PORT_6379_TCP_ADDR || "127.0.0.1";
     var ipv4Client = redis.createClient( PORT, ipv4addr, { family : "IPv4", parser: parser } );
