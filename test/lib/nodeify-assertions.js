@@ -58,6 +58,14 @@ module.exports = {
         }
     },
 
+    match: function (pattern, done) {
+        return function (err, results) {
+            assert.strictEqual(null, err, "expected " + pattern.toString() + ", got error: " + err);
+            assert(pattern.test(results), "expected string '" + results + "' to match " + pattern.toString());
+            if (done) return done();
+        };
+    },
+
     serverVersionAtLeast: function (connection, desired_version) {
         // Return true if the server version >= desired_version
         var version = connection.server_info.versions;
