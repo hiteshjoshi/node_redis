@@ -186,6 +186,16 @@ describe("A node_redis client", function () {
                         return done();
                     });
                 });
+
+                describe('idle', function () {
+                    it('emits idle as soon as there are no outstanding commands', function (done) {
+                        client.on('idle', function onIdle () {
+                            client.removeListener("idle", onIdle);
+                            client.get('foo', nodeAssert.isString('bar', done));
+                        });
+                        client.set('foo', 'bar');
+                    });
+                });
             });
 
             describe('detect_buffers', function () {
@@ -398,6 +408,111 @@ describe("A node_redis client", function () {
                         clearTimeout(id);
                         assert.strictEqual(code, 0);
                         return done();
+                    });
+                });
+            });
+
+            describe('socket_nodelay', function () {
+                describe('true', function () {
+                    var client;
+                    var args = config.configureClient(parser, ip, {
+                        socket_nodelay: true
+                    });
+
+                    it("fires client.on('ready')", function (done) {
+                        client = redis.createClient.apply(redis.createClient, args);
+                        client.on("ready", function () {
+                            assert.strictEqual(true, client.options.socket_nodelay);
+                            client.quit();
+
+                            client.once('end', function () {
+                                return done();
+                            });
+                        });
+                    });
+
+                    it('client is functional', function (done) {
+                        client = redis.createClient.apply(redis.createClient, args);
+                        client.on("ready", function () {
+                            assert.strictEqual(true, client.options.socket_nodelay);
+                            client.set(["set key 1", "set val"], nodeAssert.isString("OK"));
+                            client.set(["set key 2", "set val"], nodeAssert.isString("OK"));
+                            client.get(["set key 1"], nodeAssert.isString("set val"));
+                            client.get(["set key 2"], nodeAssert.isString("set val"));
+                            client.quit();
+
+                            client.once('end', function () {
+                                return done();
+                            });
+                        });
+                    });
+                });
+
+                describe('false', function () {
+                    var client;
+                    var args = config.configureClient(parser, ip, {
+                        socket_nodelay: false
+                    });
+
+                    it("fires client.on('ready')", function (done) {
+                        client = redis.createClient.apply(redis.createClient, args);
+                        client.on("ready", function () {
+                            assert.strictEqual(false, client.options.socket_nodelay);
+                            client.quit();
+
+                            client.once('end', function () {
+                                return done();
+                            });
+                        });
+                    });
+
+                    it('client is functional', function (done) {
+                        client = redis.createClient.apply(redis.createClient, args);
+                        client.on("ready", function () {
+                            assert.strictEqual(false, client.options.socket_nodelay);
+                            client.set(["set key 1", "set val"], nodeAssert.isString("OK"));
+                            client.set(["set key 2", "set val"], nodeAssert.isString("OK"));
+                            client.get(["set key 1"], nodeAssert.isString("set val"));
+                            client.get(["set key 2"], nodeAssert.isString("set val"));
+                            client.quit();
+
+                            client.once('end', function () {
+                                return done();
+                            });
+                        });
+                    });
+                });
+
+                describe('defaults to true', function () {
+                    var client;
+                    var args = config.configureClient(parser, ip);
+
+                    it("fires client.on('ready')", function (done) {
+                        client = redis.createClient.apply(redis.createClient, args);
+                        client.on("ready", function () {
+                            assert.strictEqual(true, client.options.socket_nodelay);
+                            client.quit();
+
+                            client.once('end', function () {
+                                return done();
+                            });
+                        });
+                    });
+
+                    it('client is functional', function (done) {
+                        client = redis.createClient.apply(redis.createClient, args);
+                        client.on("ready", function () {
+                            assert.strictEqual(true, client.options.socket_nodelay);
+                            client.set(["set key 1", "set val"], nodeAssert.isString("OK"));
+                            client.set(["set key 2", "set val"], nodeAssert.isString("OK"));
+                            client.get(["set key 1"], nodeAssert.isString("set val"));
+                            client.get(["set key 2"], nodeAssert.isString("set val"));
+                            client.quit();
+
+                            client.once('end', function () {
+                                return done();
+                            });
+                        });
                     });
                 });
             });

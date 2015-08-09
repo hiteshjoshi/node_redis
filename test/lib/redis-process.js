@@ -28,7 +28,7 @@ module.exports = {
                                   }
                                   return done(error);
                               });
-                              rp.kill("SIGINT");
+                              rp.kill("SIGKILL");
                           }
                       });
                   }
