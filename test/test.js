@@ -115,55 +115,6 @@ next = function next(name) {
     run_next_test();
 };
 
-tests.WATCH_MULTI = function () {
-    var name = 'WATCH_MULTI', multi;
-    if (!server_version_at_least(client, [2, 2, 0])) {
-        console.log("Skipping " + name + " for old Redis server version < 2.2.x");
-        return next(name);
-    }
-
-    client.watch(name);
-    client.incr(name);
-    multi = client.multi();
-    multi.incr(name);
-    multi.exec(last(name, require_null(name)));
-};
-
-tests.WATCH_TRANSACTION = function () {
-    var name = "WATCH_TRANSACTION";
-
-    if (!server_version_at_least(client, [2, 1, 0])) {
-        console.log("Skipping " + name + " because server version isn't new enough.");
-        return next(name);
-    }
-
-    // Test WATCH command aborting transactions, look for parser offset errors.
-
-    client.set("unwatched", 200);
-
-    client.set(name, 0);
-    client.watch(name);
-    client.incr(name);
-    var multi = client.multi()
-        .incr(name)
-        .exec(function (err, replies) {
-            // Failure expected because of pre-multi incr
-            assert.strictEqual(replies, null, "Aborted transaction multi-bulk reply should be null.");
-
-            client.get("unwatched", function (err, reply) {
-                assert.equal(err, null, name);
-                assert.equal(reply, 200, "Expected 200, got " + reply);
-                next(name);
-            });
-        });
-
-    client.set("unrelated", 100, function (err, reply) {
-        assert.equal(err, null, name);
-        assert.equal(reply, "OK", "Expected 'OK', got " + reply);
-    });
-};
-
-
 tests.detect_buffers = function () {
     var name = "detect_buffers", detect_client = redis.createClient(PORT, HOST, { detect_buffers: true, parser: parser });
 
