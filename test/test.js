@@ -1460,23 +1460,6 @@ tests.reconnectRetryMaxDelay = function() {
     });
 };
 
-tests.unref = function () {
-    var name = "unref";
-    var external = fork("./test/test-unref.js", [PORT, HOST]);
-    var done = false;
-    external.on("close", function (code) {
-        assert(code === 0, "test-unref.js failed");
-        done = true;
-    });
-    setTimeout(function () {
-        if (!done) {
-            external.kill();
-        }
-        assert(done, "test-unref.js didn't finish in time.");
-        next(name);
-    }, 1500);
-};
-
 // starting to split tests into multiple files.
 require('./queue-test')(tests, next);
 

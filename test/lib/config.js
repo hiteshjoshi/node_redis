@@ -15,12 +15,17 @@ module.exports = (function () {
         var args = [];
         opts = opts || {};
 
-        args.push(config.PORT);
-        args.push(config.HOST[ip]);
-        opts.family = ip;
+        if (ip.match(/\.sock/)) {
+            args.push(ip)
+        } else {
+            args.push(config.PORT);
+            args.push(config.HOST[ip]);
+            opts.family = ip;
+        }
+
         opts.parser = parser;
         args.push(opts);
-        
+
         return args;
     };
 

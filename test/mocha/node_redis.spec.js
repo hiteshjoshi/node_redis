@@ -1,6 +1,7 @@
 var async = require("async");
 var assert = require("assert");
 var config = require("../lib/config");
+var fork = require("child_process").fork;
 var nodeAssert = require("../lib/nodeify-assertions");
 var redis = config.redis;
 var RedisProcess = require("../lib/redis-process");
@@ -45,9 +46,7 @@ describe("A node_redis client", function () {
                     client = redis.createClient.apply(redis.createClient, args);
                     client.once("error", done);
                     client.once("connect", function () {
-                        client.flushdb(function (err) {
-                            return done(err);
-                        })
+                        client.flushdb(done)
                     });
                 });
 
@@ -382,6 +381,23 @@ describe("A node_redis client", function () {
                                 return done(err);
                             });
                         });
+                    });
+                });
+            });
+
+            describe('unref', function () {
+                it('exits subprocess as soon as final command is processed', function (done) {
+                    var args = config.HOST[ip] ? [config.HOST[ip], config.PORT] : [ip];
+                    var external = fork("./test/test-unref.js", args);
+                    var id = setTimeout(function () {
+                        external.kill();
+                        return done(Error('unref subprocess timed out'));
+                    }, 1500);
+
+                    external.on("close", function (code) {
+                        clearTimeout(id);
+                        assert.strictEqual(code, 0);
+                        return done();
                     });
                 });
             });
