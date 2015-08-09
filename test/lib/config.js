@@ -11,18 +11,16 @@ module.exports = (function () {
         }
     };
 
-    config.configureClient = function (parser, ip, isSocket) {
+    config.configureClient = function (parser, ip, opts) {
         var args = [];
+        opts = opts || {};
 
-        if (!isSocket) {
-            args.push(config.PORT);
-            args.push(config.HOST[ip]);
-            args.push({ family: ip, parser: parser });
-        } else {
-            args.push(ip);
-            args.push({ parser: parser });
-        }
-
+        args.push(config.PORT);
+        args.push(config.HOST[ip]);
+        opts.family = ip;
+        opts.parser = parser;
+        args.push(opts);
+        
         return args;
     };
 
