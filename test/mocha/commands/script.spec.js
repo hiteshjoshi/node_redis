@@ -62,7 +62,7 @@ describe("The 'script' method", function () {
             it("allows a script to be loaded using a transaction's array syntax", function (done) {
                 client.multi([['script', 'load', command]]).exec(function(err, result) {
                     assert.strictEqual(result[0], commandSha);
-                    return done()                  
+                    return done()
                 })
             })
         });

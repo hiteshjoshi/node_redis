@@ -4,9 +4,9 @@ var path = require('path');
 var tcpPortUsed = require('tcp-port-used');
 
 module.exports = {
-    start: function (done) {
+    start: function (done, conf) {
         // spawn redis with our testing configuration.
-        var confFile = path.resolve(__dirname, '../conf/redis.conf');
+        var confFile = conf || path.resolve(__dirname, '../conf/redis.conf');
         var rp = cp.spawn("redis-server", [confFile], {});
 
         // wait for redis to become available, by

@@ -39,6 +39,10 @@ describe("The 'incr' method", function () {
                     });
                 });
 
+                afterEach(function () {
+                    client.end();
+                });
+
                 it("reports an error", function (done) {
                     client.incr(function (err, res) {
                         assert.equal(err.message, 'Redis connection gone from end event.');

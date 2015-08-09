@@ -1376,48 +1376,6 @@ tests.DOMAIN = function () {
     }
 };
 
-// TODO - need a better way to test auth, maybe auto-config a local Redis server or something.
-// Yes, this is the real password.  Please be nice, thanks.
-tests.auth = function () {
-    var name = "AUTH", client4, ready_count = 0;
-
-    client4 = redis.createClient(9006, "filefish.redistogo.com", { parser: parser });
-    client4.auth("664b1b6aaf134e1ec281945a8de702a9", function (err, res) {
-        assert.strictEqual(null, err, name);
-        assert.strictEqual("OK", res.toString(), name);
-    });
-
-    // test auth, then kill the connection so it'll auto-reconnect and auto-re-auth
-    client4.on("ready", function () {
-        ready_count++;
-        if (ready_count === 1) {
-            client4.stream.destroy();
-        } else {
-            client4.quit(function (err, res) {
-                next(name);
-            });
-        }
-    });
-};
-
-tests.auth2 = function () {
-    var name = "AUTH2", client4, ready_count = 0;
-
-    client4 = redis.createClient(9006, "filefish.redistogo.com", { auth_pass: "664b1b6aaf134e1ec281945a8de702a9", parser: parser });
-
-    // test auth, then kill the connection so it'll auto-reconnect and auto-re-auth
-    client4.on("ready", function () {
-        ready_count++;
-        if (ready_count === 1) {
-            client4.stream.destroy();
-        } else {
-            client4.quit(function (err, res) {
-                next(name);
-            });
-        }
-    });
-};
-
 // auth password specified by URL string.
 tests.auth3 = function () {
     var name = "AUTH3", client4, ready_count = 0;
