@@ -55,6 +55,16 @@ describe("The 'hset' method", function () {
                 });
             });
 
+            it('does not error when a buffer and array are set as fields on the same hash', function (done) {
+                var hash = "test hash"
+                var field1 = "buffer"
+                var value1 = new Buffer("abcdefghij")
+                var field2 = "array"
+                var value2 = ["array contents"]
+
+                client.HMSET(hash, field1, value1, field2, value2, nodeAssert.isString("OK", done));
+            });
+
             afterEach(function () {
                 client.end();
             });

@@ -115,69 +115,6 @@ next = function next(name) {
     run_next_test();
 };
 
-tests.HMSET_BUFFER_AND_ARRAY = function () {
-    // Saving a buffer and an array to the same key should not error
-    var key = "test hash",
-        field1 = "buffer",
-        value1 = new Buffer("abcdefghij"),
-        field2 = "array",
-        value2 = ["array contents"],
-        name = "HSET";
-
-    client.HMSET(key, field1, value1, field2, value2, last(name, require_string("OK", name)));
-};
-
-// TODO - add test for HMSET with optional callbacks
-
-tests.HMGET = function () {
-    var key1 = "test hash 1", key2 = "test hash 2", key3 = 123456789, name = "HMGET";
-
-    // redis-like hmset syntax
-    client.HMSET(key1, "0123456789", "abcdefghij", "some manner of key", "a type of value", require_string("OK", name));
-
-    // fancy hmset syntax
-    client.HMSET(key2, {
-        "0123456789": "abcdefghij",
-        "some manner of key": "a type of value"
-    }, require_string("OK", name));
-
-    // test for numeric key
-    client.HMSET(key3, {
-        "0123456789": "abcdefghij",
-        "some manner of key": "a type of value"
-    }, require_string("OK", name));
-
-    client.HMGET(key1, "0123456789", "some manner of key", function (err, reply) {
-        assert.strictEqual("abcdefghij", reply[0].toString(), name);
-        assert.strictEqual("a type of value", reply[1].toString(), name);
-    });
-
-    client.HMGET(key2, "0123456789", "some manner of key", function (err, reply) {
-        assert.strictEqual("abcdefghij", reply[0].toString(), name);
-        assert.strictEqual("a type of value", reply[1].toString(), name);
-    });
-
-    client.HMGET(key3, "0123456789", "some manner of key", function (err, reply) {
-        assert.strictEqual("abcdefghij", reply[0].toString(), name);
-        assert.strictEqual("a type of value", reply[1].toString(), name);
-    });
-
-    client.HMGET(key1, ["0123456789"], function (err, reply) {
-        assert.strictEqual("abcdefghij", reply[0], name);
-    });
-
-    client.HMGET(key1, ["0123456789", "some manner of key"], function (err, reply) {
-        assert.strictEqual("abcdefghij", reply[0], name);
-        assert.strictEqual("a type of value", reply[1], name);
-    });
-
-    client.HMGET(key1, "missing thing", "another missing thing", function (err, reply) {
-        assert.strictEqual(null, reply[0], name);
-        assert.strictEqual(null, reply[1], name);
-        next(name);
-    });
-};
-
 tests.HINCRBY = function () {
     var name = "HINCRBY";
     client.hset("hash incr", "value", 10, require_number(1, name));
@@ -1273,25 +1210,6 @@ tests.DOMAIN = function () {
           next(name);
         });
     }
-};
-
-// auth password specified by URL string.
-tests.auth3 = function () {
-    var name = "AUTH3", client4, ready_count = 0;
-
-    client4 = redis.createClient('redis://redistogo:664b1b6aaf134e1ec281945a8de702a9@filefish.redistogo.com:9006/');
-
-    // test auth, then kill the connection so it'll auto-reconnect and auto-re-auth
-    client4.on("ready", function () {
-        ready_count++;
-        if (ready_count === 1) {
-            client4.stream.destroy();
-        } else {
-            client4.quit(function (err, res) {
-                next(name);
-            });
-        }
-    });
 };
 
 tests.reconnectRetryMaxDelay = function() {

@@ -398,11 +398,11 @@ describe("A node_redis client", function () {
             describe('unref', function () {
                 it('exits subprocess as soon as final command is processed', function (done) {
                     var args = config.HOST[ip] ? [config.HOST[ip], config.PORT] : [ip];
-                    var external = fork("./test/test-unref.js", args);
+                    var external = fork("./test/lib/unref.js", args);
                     var id = setTimeout(function () {
                         external.kill();
                         return done(Error('unref subprocess timed out'));
-                    }, 1500);
+                    }, 5000);
 
                     external.on("close", function (code) {
                         clearTimeout(id);
