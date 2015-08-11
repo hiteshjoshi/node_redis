@@ -4,5 +4,4 @@ node_js:
   - "0.10"
   - "0.12"
   - "iojs"
-script: npm run mocha
 after_success: npm run coverage
