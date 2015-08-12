@@ -5,7 +5,7 @@ var nodeAssert = require("../../lib/nodeify-assertions");
 var redis = config.redis;
 var RedisProcess = require("../../lib/redis-process");
 
-describe("The 'hlen' method", function () {
+describe("The 'del' method", function () {
 
     var rp;
     before(function (done) {
@@ -29,16 +29,21 @@ describe("The 'hlen' method", function () {
                 });
             });
 
-            it('reports the count of keys', function (done) {
-                var hash = "test hash";
-                var field1 = new Buffer("0123456789");
-                var value1 = new Buffer("abcdefghij");
-                var field2 = new Buffer(0);
-                var value2 = new Buffer(0);
+            it('allows a single key to be deleted', function (done) {
+                client.set('foo', 'bar');
+                client.del('foo', nodeAssert.isNumber(1));
+                client.get('foo', nodeAssert.isNull(done));
+            });
 
-                client.HSET(hash, field1, value1, nodeAssert.isNumber(1));
-                client.HSET(hash, field2, value2, nodeAssert.isNumber(1));
-                client.HLEN(hash, nodeAssert.isNumber(2, done));
+            it('allows del to be called on a key that does not exist', function (done) {
+                client.del('foo', nodeAssert.isNumber(0, done));
+            });
+
+            it('allows multiple keys to be deleted', function (done) {
+                client.mset('foo', 'bar', 'apple', 'banana');
+                client.del('foo', 'apple', nodeAssert.isNumber(2));
+                client.get('foo', nodeAssert.isNull());
+                client.get('apple', nodeAssert.isNull(done));
             });
 
             afterEach(function () {

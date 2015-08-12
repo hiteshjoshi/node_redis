@@ -5,7 +5,7 @@ var nodeAssert = require("../../lib/nodeify-assertions");
 var redis = config.redis;
 var RedisProcess = require("../../lib/redis-process");
 
-describe("The 'hlen' method", function () {
+describe("The 'exits' method", function () {
 
     var rp;
     before(function (done) {
@@ -29,16 +29,13 @@ describe("The 'hlen' method", function () {
                 });
             });
 
-            it('reports the count of keys', function (done) {
-                var hash = "test hash";
-                var field1 = new Buffer("0123456789");
-                var value1 = new Buffer("abcdefghij");
-                var field2 = new Buffer(0);
-                var value2 = new Buffer(0);
+            it('returns 1 if the key exists', function (done) {
+                client.set('foo', 'bar');
+                client.exists('foo', nodeAssert.isNumber(1, done));
+            });
 
-                client.HSET(hash, field1, value1, nodeAssert.isNumber(1));
-                client.HSET(hash, field2, value2, nodeAssert.isNumber(1));
-                client.HLEN(hash, nodeAssert.isNumber(2, done));
+            it('returns 0 if the key does not exist', function (done) {
+                client.exists('bar', nodeAssert.isNumber(0, done));
             });
 
             afterEach(function () {
