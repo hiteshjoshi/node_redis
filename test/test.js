@@ -1,3 +1,5 @@
+return;
+
 'use strict';
 
 /*global require console setTimeout process Buffer */
