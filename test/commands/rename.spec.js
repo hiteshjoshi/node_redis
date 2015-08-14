@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'rename' method", function () {
@@ -20,15 +20,15 @@ describe("The 'rename' method", function () {
             });
 
             it('populates the new key', function (done) {
-                client.set(['foo', 'bar'], nodeAssert.isString("OK"));
-                client.RENAME(["foo", "new foo"], nodeAssert.isString("OK"));
-                client.exists(["new foo"], nodeAssert.isNumber(1, done));
+                client.set(['foo', 'bar'], helper.isString("OK"));
+                client.RENAME(["foo", "new foo"], helper.isString("OK"));
+                client.exists(["new foo"], helper.isNumber(1, done));
             });
 
             it('removes the old key', function (done) {
-                client.set(['foo', 'bar'], nodeAssert.isString("OK"));
-                client.RENAME(["foo", "new foo"], nodeAssert.isString("OK"));
-                client.exists(["foo"], nodeAssert.isNumber(0, done));
+                client.set(['foo', 'bar'], helper.isString("OK"));
+                client.RENAME(["foo", "new foo"], helper.isString("OK"));
+                client.exists(["foo"], helper.isNumber(0, done));
             });
 
             afterEach(function () {

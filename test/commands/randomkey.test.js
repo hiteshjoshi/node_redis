@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'randomkey' method", function () {
@@ -20,7 +20,7 @@ describe("The 'randomkey' method", function () {
             });
 
             it('returns a random key', function (done) {
-                client.mset(["test keys 1", "test val 1", "test keys 2", "test val 2"], nodeAssert.isString('OK'));
+                client.mset(["test keys 1", "test val 1", "test keys 2", "test val 2"], helper.isString('OK'));
                 client.RANDOMKEY([], function (err, results) {
                     assert.strictEqual(true, /test keys.+/.test(results));
                     return done(err);

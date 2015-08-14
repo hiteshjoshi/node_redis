@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'setex' method", function () {
@@ -20,8 +20,8 @@ describe("The 'setex' method", function () {
             });
 
             it('sets a key with an expiry', function (done) {
-                client.SETEX(["setex key", "100", "setex val"], nodeAssert.isString("OK"));
-                client.exists(["setex key"], nodeAssert.isNumber(1));
+                client.SETEX(["setex key", "100", "setex val"], helper.isString("OK"));
+                client.exists(["setex key"], helper.isNumber(1));
                 client.ttl(['setex key'], function (err, ttl) {
                     assert.ok(ttl > 0);
                     return done();
@@ -29,7 +29,7 @@ describe("The 'setex' method", function () {
             });
 
             it('returns an error if no value is provided', function (done) {
-                client.SETEX(["setex key", "100", undefined], nodeAssert.isError(done));
+                client.SETEX(["setex key", "100", undefined], helper.isError(done));
             });
             
             afterEach(function () {

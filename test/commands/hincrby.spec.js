@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'hincrby' method", function () {
@@ -24,13 +24,13 @@ describe("The 'hincrby' method", function () {
                 var field = "field 1";
 
                 client.HSET(hash, field, 33);
-                client.HINCRBY(hash, field, 10, nodeAssert.isNumber(43, done));
+                client.HINCRBY(hash, field, 10, helper.isNumber(43, done));
             });
 
             it('increments a key that has not been set', function (done) {
                 var field = "field 2";
 
-                client.HINCRBY(hash, field, 10, nodeAssert.isNumber(10, done));
+                client.HINCRBY(hash, field, 10, helper.isNumber(10, done));
             });
 
             afterEach(function () {

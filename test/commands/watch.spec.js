@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'watch' method", function () {
@@ -17,7 +17,7 @@ describe("The 'watch' method", function () {
                 client.once("error", done);
                 client.once("connect", function () {
                     client.flushdb(function (err) {
-                        if (!nodeAssert.serverVersionAtLeast(client, [2, 2, 0])) {
+                        if (!helper.serverVersionAtLeast(client, [2, 2, 0])) {
                           err = Error('some watch commands not supported in redis <= 2.2.0')
                         }
                         return done(err);
@@ -35,7 +35,7 @@ describe("The 'watch' method", function () {
                 client.incr(watched);
                 multi = client.multi();
                 multi.incr(watched);
-                multi.exec(nodeAssert.isNull(done));
+                multi.exec(helper.isNull(done));
             })
 
             it('successfully modifies other keys independently of transaction', function (done) {

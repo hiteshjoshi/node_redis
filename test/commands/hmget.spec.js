@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'hmget' method", function () {
@@ -17,7 +17,7 @@ describe("The 'hmget' method", function () {
                 client.once("error", done);
                 client.once("connect", function () {
                     client.flushdb();
-                    client.HMSET(hash, {"0123456789": "abcdefghij", "some manner of key": "a type of value"}, nodeAssert.isString('OK'));
+                    client.HMSET(hash, {"0123456789": "abcdefghij", "some manner of key": "a type of value"}, helper.isString('OK'));
                     return done();
                 });
             });

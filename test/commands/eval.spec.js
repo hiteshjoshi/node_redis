@@ -1,7 +1,7 @@
 var assert = require("assert");
 var config = require("../lib/config");
 var crypto = require("crypto");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'eval' method", function () {
@@ -16,7 +16,7 @@ describe("The 'eval' method", function () {
                 client.once("error", done);
                 client.once("connect", function () {
                     client.flushdb(function (err) {
-                        if (!nodeAssert.serverVersionAtLeast(client, [2, 5, 0])) {
+                        if (!helper.serverVersionAtLeast(client, [2, 5, 0])) {
                           err = Error('exec not supported in redis <= 2.5.0')
                         }
                         return done(err);
@@ -29,27 +29,27 @@ describe("The 'eval' method", function () {
             });
 
             it('converts a float to an integer when evaluated', function (done) {
-                client.eval("return 100.5", 0, nodeAssert.isNumber(100, done));
+                client.eval("return 100.5", 0, helper.isNumber(100, done));
             });
 
             it('returns a string', function (done) {
-                client.eval("return 'hello world'", 0, nodeAssert.isString('hello world', done));
+                client.eval("return 'hello world'", 0, helper.isString('hello world', done));
             });
 
             it('converts boolean true to integer 1', function (done) {
-                client.eval("return true", 0, nodeAssert.isNumber(1, done));
+                client.eval("return true", 0, helper.isNumber(1, done));
             });
 
             it('converts boolean false to null', function (done) {
-                client.eval("return false", 0, nodeAssert.isNull(done));
+                client.eval("return false", 0, helper.isNull(done));
             });
 
             it('converts lua status code to string representation', function (done) {
-                client.eval("return {ok='fine'}", 0, nodeAssert.isString('fine', done));
+                client.eval("return {ok='fine'}", 0, helper.isString('fine', done));
             });
 
             it('converts lua error to an error response', function (done) {
-                client.eval("return {err='this is an error'}", 0, nodeAssert.isError(done));
+                client.eval("return {err='this is an error'}", 0, helper.isError(done));
             });
 
             it('represents a lua table appropritely', function (done) {
@@ -99,15 +99,15 @@ describe("The 'eval' method", function () {
                 });
 
                 it('allows a script to be executed that accesses the redis API', function (done) {
-                    client.eval(source, 0, nodeAssert.isString('eval get sha test', done));
+                    client.eval(source, 0, helper.isString('eval get sha test', done));
                 });
 
                 it('can execute a script if the SHA exists', function (done) {
-                    client.evalsha(sha, 0, nodeAssert.isString('eval get sha test', done));
+                    client.evalsha(sha, 0, helper.isString('eval get sha test', done));
                 });
 
                 it('throws an error if SHA does not exist', function (done) {
-                    client.evalsha('ffffffffffffffffffffffffffffffffffffffff', 0, nodeAssert.isError(done));
+                    client.evalsha('ffffffffffffffffffffffffffffffffffffffff', 0, helper.isError(done));
                 });
             });
 

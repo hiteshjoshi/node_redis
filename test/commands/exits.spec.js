@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'exits' method", function () {
@@ -21,11 +21,11 @@ describe("The 'exits' method", function () {
 
             it('returns 1 if the key exists', function (done) {
                 client.set('foo', 'bar');
-                client.exists('foo', nodeAssert.isNumber(1, done));
+                client.exists('foo', helper.isNumber(1, done));
             });
 
             it('returns 0 if the key does not exist', function (done) {
-                client.exists('bar', nodeAssert.isNumber(0, done));
+                client.exists('bar', helper.isNumber(0, done));
             });
 
             afterEach(function () {

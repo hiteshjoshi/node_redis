@@ -1,11 +1,11 @@
 var async = require("async");
 var assert = require("assert");
 var config = require("./lib/config");
+var helper = require('./helper')
 var fork = require("child_process").fork;
-var nodeAssert = require("./lib/nodeify-assertions");
 var redis = config.redis;
 
-describe("A node_redis client", function () {
+describe("a node_redis client", function () {
 
     function allTests(parser, ip) {
         var args = config.configureClient(parser, ip);
@@ -50,22 +50,22 @@ describe("A node_redis client", function () {
                             client.on("connect", function on_connect() {
                                 async.parallel([function (cb) {
                                     client.get("recon 1", function (err, res) {
-                                        nodeAssert.isString("one")(err, res);
+                                        helper.isString("one")(err, res);
                                         cb();
                                     });
                                 }, function (cb) {
                                     client.get("recon 1", function (err, res) {
-                                        nodeAssert.isString("one")(err, res);
+                                        helper.isString("one")(err, res);
                                         cb();
                                     });
                                 }, function (cb) {
                                     client.get("recon 2", function (err, res) {
-                                        nodeAssert.isString("two")(err, res);
+                                        helper.isString("two")(err, res);
                                         cb();
                                     });
                                 }, function (cb) {
                                     client.get("recon 2", function (err, res) {
-                                        nodeAssert.isString("two")(err, res);
+                                        helper.isString("two")(err, res);
                                         cb();
                                     });
                                 }], function (err, results) {
@@ -93,12 +93,12 @@ describe("A node_redis client", function () {
                                 client.on("ready", function on_connect() {
                                     async.parallel([function (cb) {
                                         client.unsubscribe("recon channel", function (err, res) {
-                                            nodeAssert.isNotError()(err, res);
+                                            helper.isNotError()(err, res);
                                             cb();
                                         });
                                     }, function (cb) {
                                         client.get("recon 1", function (err, res) {
-                                            nodeAssert.isString("one")(err, res);
+                                            helper.isString("one")(err, res);
                                             cb();
                                         });
                                     }], function (err, results) {
@@ -125,8 +125,8 @@ describe("A node_redis client", function () {
                                     async.parallel([function (cb) {
                                         client.on("message", function (channel, message) {
                                             try {
-                                                nodeAssert.isString("recon channel")(null, channel);
-                                                nodeAssert.isString("a test message")(null, message);
+                                                helper.isString("recon channel")(null, channel);
+                                                helper.isString("a test message")(null, message);
                                             } catch (err) {
                                                 cb(err);
                                             }
@@ -210,7 +210,7 @@ describe("A node_redis client", function () {
                     it('emits idle as soon as there are no outstanding commands', function (done) {
                         client.on('idle', function onIdle () {
                             client.removeListener("idle", onIdle);
-                            client.get('foo', nodeAssert.isString('bar', done));
+                            client.get('foo', helper.isString('bar', done));
                         });
                         client.set('foo', 'bar');
                     });
@@ -238,11 +238,11 @@ describe("A node_redis client", function () {
                 describe('get', function () {
                     describe('first argument is a string', function () {
                         it('returns a string', function (done) {
-                            client.get("string key 1", nodeAssert.isString("string value", done));
+                            client.get("string key 1", helper.isString("string value", done));
                         });
 
                         it('returns a string when executed as part of transaction', function (done) {
-                            client.multi().get("string key 1").exec(nodeAssert.isString("string value", done));
+                            client.multi().get("string key 1").exec(helper.isString("string value", done));
                         });
                     });
 
@@ -454,10 +454,10 @@ describe("A node_redis client", function () {
                         client = redis.createClient.apply(redis.createClient, args);
                         client.on("ready", function () {
                             assert.strictEqual(true, client.options.socket_nodelay);
-                            client.set(["set key 1", "set val"], nodeAssert.isString("OK"));
-                            client.set(["set key 2", "set val"], nodeAssert.isString("OK"));
-                            client.get(["set key 1"], nodeAssert.isString("set val"));
-                            client.get(["set key 2"], nodeAssert.isString("set val"));
+                            client.set(["set key 1", "set val"], helper.isString("OK"));
+                            client.set(["set key 2", "set val"], helper.isString("OK"));
+                            client.get(["set key 1"], helper.isString("set val"));
+                            client.get(["set key 2"], helper.isString("set val"));
                             client.quit();
 
                             client.once('end', function () {
@@ -489,10 +489,10 @@ describe("A node_redis client", function () {
                         client = redis.createClient.apply(redis.createClient, args);
                         client.on("ready", function () {
                             assert.strictEqual(false, client.options.socket_nodelay);
-                            client.set(["set key 1", "set val"], nodeAssert.isString("OK"));
-                            client.set(["set key 2", "set val"], nodeAssert.isString("OK"));
-                            client.get(["set key 1"], nodeAssert.isString("set val"));
-                            client.get(["set key 2"], nodeAssert.isString("set val"));
+                            client.set(["set key 1", "set val"], helper.isString("OK"));
+                            client.set(["set key 2", "set val"], helper.isString("OK"));
+                            client.get(["set key 1"], helper.isString("set val"));
+                            client.get(["set key 2"], helper.isString("set val"));
                             client.quit();
 
                             client.once('end', function () {
@@ -522,10 +522,10 @@ describe("A node_redis client", function () {
                         client = redis.createClient.apply(redis.createClient, args);
                         client.on("ready", function () {
                             assert.strictEqual(true, client.options.socket_nodelay);
-                            client.set(["set key 1", "set val"], nodeAssert.isString("OK"));
-                            client.set(["set key 2", "set val"], nodeAssert.isString("OK"));
-                            client.get(["set key 1"], nodeAssert.isString("set val"));
-                            client.get(["set key 2"], nodeAssert.isString("set val"));
+                            client.set(["set key 1", "set val"], helper.isString("OK"));
+                            client.set(["set key 2", "set val"], helper.isString("OK"));
+                            client.get(["set key 1"], helper.isString("set val"));
+                            client.get(["set key 2"], helper.isString("set val"));
                             client.quit();
 
                             client.once('end', function () {

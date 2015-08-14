@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'mget' method", function () {
@@ -21,7 +21,7 @@ describe("The 'mget' method", function () {
             });
 
             it('handles fetching multiple keys in argument form', function (done) {
-                client.mset(["mget keys 1", "mget val 1", "mget keys 2", "mget val 2", "mget keys 3", "mget val 3"], nodeAssert.isString("OK"));
+                client.mset(["mget keys 1", "mget val 1", "mget keys 2", "mget val 2", "mget keys 3", "mget val 3"], helper.isString("OK"));
                 client.MGET("mget keys 1", "mget keys 2", "mget keys 3", function (err, results) {
                     assert.strictEqual(3, results.length);
                     assert.strictEqual("mget val 1", results[0].toString());

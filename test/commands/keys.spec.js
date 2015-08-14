@@ -1,7 +1,7 @@
 var assert = require("assert");
 var config = require("../lib/config");
 var crypto = require("crypto");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'keys' method", function () {
@@ -21,7 +21,7 @@ describe("The 'keys' method", function () {
             });
 
             it('returns matching keys', function (done) {
-                client.mset(["test keys 1", "test val 1", "test keys 2", "test val 2"], nodeAssert.isString("OK"));
+                client.mset(["test keys 1", "test val 1", "test keys 2", "test val 2"], helper.isString("OK"));
                 client.KEYS(["test keys*"], function (err, results) {
                     assert.strictEqual(2, results.length);
                     assert.ok(~results.indexOf("test keys 1"));
@@ -43,7 +43,7 @@ describe("The 'keys' method", function () {
 
                 client.mset(keys_values.reduce(function(a, b) {
                     return a.concat(b);
-                }), nodeAssert.isString("OK"));
+                }), helper.isString("OK"));
 
                 client.KEYS("multibulk:*", function(err, results) {
                     assert.deepEqual(keys_values.map(function(val) {

@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'setnx' method", function () {
@@ -20,14 +20,14 @@ describe("The 'setnx' method", function () {
             });
 
             it('sets key if it does not have a value', function (done) {
-                client.setnx('foo', 'banana', nodeAssert.isNumber(1));
-                client.get('foo', nodeAssert.isString('banana', done));
+                client.setnx('foo', 'banana', helper.isNumber(1));
+                client.get('foo', helper.isString('banana', done));
             });
 
             it('does not set key if it already has a value', function (done) {
-                client.set('foo', 'bar', nodeAssert.isString('OK'));
-                client.setnx('foo', 'banana', nodeAssert.isNumber(0));
-                client.get('foo', nodeAssert.isString('bar', done));
+                client.set('foo', 'bar', helper.isString('OK'));
+                client.setnx('foo', 'banana', helper.isNumber(0));
+                client.get('foo', helper.isString('bar', done));
                 return done();
             });
 

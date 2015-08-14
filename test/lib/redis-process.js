@@ -1,3 +1,4 @@
+// helper to start and stop the redis process.
 var cp = require('child_process');
 var config = require('./config');
 var fs = require('fs');
@@ -33,6 +34,8 @@ module.exports = {
     }
 };
 
+// wait for redis to be listening in
+// all three modes (ipv4, ipv6, socket).
 function waitForRedis (available, cb) {
     var ipV4 = false;
     var id = setInterval(function () {

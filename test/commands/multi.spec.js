@@ -1,7 +1,7 @@
 var async = require('async');
 var assert = require('assert');
 var config = require("../lib/config");
-var nodeAssert = require('../lib/nodeify-assertions');
+var helper = require('../helper');
 var redis = config.redis;
 var uuid = require('uuid');
 
@@ -63,24 +63,24 @@ describe("The 'multi' method", function () {
 
                     // Provoke an error at queue time
                     multi1 = client.multi();
-                    multi1.mset("multifoo", "10", "multibar", "20", nodeAssert.isString("OK"));
-                    multi1.set("foo2", nodeAssert.isError());
-                    multi1.incr("multifoo", nodeAssert.isNumber(11));
-                    multi1.incr("multibar", nodeAssert.isNumber(21));
+                    multi1.mset("multifoo", "10", "multibar", "20", helper.isString("OK"));
+                    multi1.set("foo2", helper.isError());
+                    multi1.incr("multifoo", helper.isNumber(11));
+                    multi1.incr("multibar", helper.isNumber(21));
                     multi1.exec(function () {
                         // Redis 2.6.5+ will abort transactions with errors
                         // see: http://redis.io/topics/transactions
                         var multibar_expected = 22;
                         var multifoo_expected = 12;
-                        if (nodeAssert.serverVersionAtLeast(client, [2, 6, 5])) {
+                        if (helper.serverVersionAtLeast(client, [2, 6, 5])) {
                             multibar_expected = 1;
                             multifoo_expected = 1;
                         }
 
                         // Confirm that the previous command, while containing an error, still worked.
                         multi2 = client.multi();
-                        multi2.incr("multibar", nodeAssert.isNumber(multibar_expected));
-                        multi2.incr("multifoo", nodeAssert.isNumber(multifoo_expected));
+                        multi2.incr("multibar", helper.isNumber(multibar_expected));
+                        multi2.incr("multifoo", helper.isNumber(multifoo_expected));
                         multi2.exec(function (err, replies) {
                             assert.strictEqual(multibar_expected, replies[0]);
                             assert.strictEqual(multifoo_expected, replies[1]);
@@ -93,25 +93,25 @@ describe("The 'multi' method", function () {
                 // perhaps @mranney can clarify?
                 it('roles back a transaction when an error was provoked at queue time', function (done) {
                     multi1 = client.multi();
-                    multi1.mset("multifoo_8", "10", "multibar_8", "20", nodeAssert.isString("OK"));
-                    multi1.set("foo2", nodeAssert.isError());
-                    multi1.set("foo3", nodeAssert.isError());
-                    multi1.incr("multifoo_8", nodeAssert.isNumber(11));
-                    multi1.incr("multibar_8", nodeAssert.isNumber(21));
+                    multi1.mset("multifoo_8", "10", "multibar_8", "20", helper.isString("OK"));
+                    multi1.set("foo2", helper.isError());
+                    multi1.set("foo3", helper.isError());
+                    multi1.incr("multifoo_8", helper.isNumber(11));
+                    multi1.incr("multibar_8", helper.isNumber(21));
                     multi1.exec(function () {
                         // Redis 2.6.5+ will abort transactions with errors
                         // see: http://redis.io/topics/transactions
                         var multibar_expected = 22;
                         var multifoo_expected = 12;
-                        if (nodeAssert.serverVersionAtLeast(client, [2, 6, 5])) {
+                        if (helper.serverVersionAtLeast(client, [2, 6, 5])) {
                             multibar_expected = 1;
                             multifoo_expected = 1;
                         }
 
                         // Confirm that the previous command, while containing an error, still worked.
                         multi2 = client.multi();
-                        multi2.incr("multibar_8", nodeAssert.isNumber(multibar_expected));
-                        multi2.incr("multifoo_8", nodeAssert.isNumber(multifoo_expected));
+                        multi2.incr("multibar_8", helper.isNumber(multibar_expected));
+                        multi2.incr("multifoo_8", helper.isNumber(multifoo_expected));
                         multi2.exec(function (err, replies) {
                             assert.strictEqual(multibar_expected, replies[0]);
                             assert.strictEqual(multifoo_expected, replies[1]);
@@ -128,11 +128,11 @@ describe("The 'multi' method", function () {
                               assert.strictEqual("0", res[0].toString());
                               assert.strictEqual("0", res[1].toString());
                           }],
-                          ["set", "foo2", nodeAssert.isError()],
-                          ["incr", "multifoo", nodeAssert.isNumber(1)],
-                          ["incr", "multibar", nodeAssert.isNumber(1)]
+                          ["set", "foo2", helper.isError()],
+                          ["incr", "multifoo", helper.isNumber(1)],
+                          ["incr", "multibar", helper.isNumber(1)]
                       ]).exec(function (err, replies) {
-                          if (nodeAssert.serverVersionAtLeast(client, [2, 6, 5])) {
+                          if (helper.serverVersionAtLeast(client, [2, 6, 5])) {
                               assert.notEqual(err, null);
                               assert.equal(replies, undefined);
                           } else {
@@ -226,7 +226,7 @@ describe("The 'multi' method", function () {
                 });
 
                 it('reports multiple exceptions when they occur', function (done) {
-                    if (!nodeAssert.serverVersionAtLeast(client, [2, 6, 5])) return done();
+                    if (!helper.serverVersionAtLeast(client, [2, 6, 5])) return done();
 
                     client.multi().set("foo").exec(function (err, reply) {
                         assert(Array.isArray(err), "err should be an array");

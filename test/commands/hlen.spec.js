@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'hlen' method", function () {
@@ -26,9 +26,9 @@ describe("The 'hlen' method", function () {
                 var field2 = new Buffer(0);
                 var value2 = new Buffer(0);
 
-                client.HSET(hash, field1, value1, nodeAssert.isNumber(1));
-                client.HSET(hash, field2, value2, nodeAssert.isNumber(1));
-                client.HLEN(hash, nodeAssert.isNumber(2, done));
+                client.HSET(hash, field1, value1, helper.isNumber(1));
+                client.HSET(hash, field2, value2, helper.isNumber(1));
+                client.HLEN(hash, helper.isNumber(2, done));
             });
 
             afterEach(function () {

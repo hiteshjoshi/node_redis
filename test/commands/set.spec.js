@@ -1,7 +1,7 @@
 var async = require('async');
 var assert = require('assert');
 var config = require("../lib/config");
-var nodeAssert = require('../lib/nodeify-assertions');
+var helper = require('../helper');
 var redis = config.redis;
 var uuid = require('uuid');
 
@@ -65,9 +65,9 @@ describe("The 'set' method", function () {
                     describe("with valid parameters", function () {
                         it("sets the value correctly", function (done) {
                             client.set(key, value, function (err, res) {
-                                nodeAssert.isNotError()(err, res);
+                                helper.isNotError()(err, res);
                                 client.get(key, function (err, res) {
-                                    nodeAssert.isString(value)(err, res);
+                                    helper.isString(value)(err, res);
                                     done();
                                 });
                             });
@@ -77,7 +77,7 @@ describe("The 'set' method", function () {
                     describe("with undefined 'key' and missing 'value' parameter", function () {
                         it("reports an error", function (done) {
                             client.set(undefined, function (err, res) {
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                                 done();
                             });
                         });
@@ -86,7 +86,7 @@ describe("The 'set' method", function () {
                     describe("with undefined 'key' and defined 'value' parameters", function () {
                         it("reports an error", function () {
                             client.set(undefined, value, function (err, res) {
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                                 done();
                             });
                         });
@@ -99,7 +99,7 @@ describe("The 'set' method", function () {
                             client.set(key, value);
                             setTimeout(function () {
                                 client.get(key, function (err, res) {
-                                    nodeAssert.isString(value)(err, res);
+                                    helper.isString(value)(err, res);
                                     done();
                                 });
                             }, 100);
@@ -111,7 +111,7 @@ describe("The 'set' method", function () {
                             this.timeout(200);
 
                             client.once("error", function (err) {
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                                 return done(err);
                             });
 
@@ -145,7 +145,7 @@ describe("The 'set' method", function () {
 
                             process.once('uncaughtException', function (err) {
                                 process.on('uncaughtException', mochaListener);
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                             });
 
                             client.set(undefined, value);

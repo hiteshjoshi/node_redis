@@ -1,3 +1,5 @@
+// helpers for configuring a redis client in
+// its various modes, ipV6, ipV4, socket.
 module.exports = (function () {
     var redis = require('../../index');
     redis.debug_mode = process.env.DEBUG ? JSON.parse(process.env.DEBUG) : false;

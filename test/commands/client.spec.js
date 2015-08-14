@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'client' method", function () {
@@ -17,7 +17,7 @@ describe("The 'client' method", function () {
                 client.once("error", done);
                 client.once("connect", function () {
                     client.flushdb(function (err) {
-                        if (!nodeAssert.serverVersionAtLeast(client, [2, 4, 0])) {
+                        if (!helper.serverVersionAtLeast(client, [2, 4, 0])) {
                           err = Error('script not supported in redis <= 2.4.0')
                         }
                         return done(err);
@@ -32,7 +32,7 @@ describe("The 'client' method", function () {
 
             describe('list', function () {
                 it('lists connected clients', function (done) {
-                    client.client("list", nodeAssert.match(pattern, done));
+                    client.client("list", helper.match(pattern, done));
                 });
 
                 it("lists connected clients when invoked with multi's chaining syntax", function (done) {

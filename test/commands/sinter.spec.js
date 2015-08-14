@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'sinter' method", function () {
@@ -20,13 +20,13 @@ describe("The 'sinter' method", function () {
             });
 
             it('handles two sets being intersected', function (done) {
-                client.sadd('sa', 'a', nodeAssert.isNumber(1));
-                client.sadd('sa', 'b', nodeAssert.isNumber(1));
-                client.sadd('sa', 'c', nodeAssert.isNumber(1));
+                client.sadd('sa', 'a', helper.isNumber(1));
+                client.sadd('sa', 'b', helper.isNumber(1));
+                client.sadd('sa', 'c', helper.isNumber(1));
 
-                client.sadd('sb', 'b', nodeAssert.isNumber(1));
-                client.sadd('sb', 'c', nodeAssert.isNumber(1));
-                client.sadd('sb', 'd', nodeAssert.isNumber(1));
+                client.sadd('sb', 'b', helper.isNumber(1));
+                client.sadd('sb', 'c', helper.isNumber(1));
+                client.sadd('sb', 'd', helper.isNumber(1));
 
                 client.sinter('sa', 'sb', function (err, intersection) {
                     assert.equal(intersection.length, 2);
@@ -36,17 +36,17 @@ describe("The 'sinter' method", function () {
             });
 
             it('handles three sets being intersected', function (done) {
-                client.sadd('sa', 'a', nodeAssert.isNumber(1));
-                client.sadd('sa', 'b', nodeAssert.isNumber(1));
-                client.sadd('sa', 'c', nodeAssert.isNumber(1));
+                client.sadd('sa', 'a', helper.isNumber(1));
+                client.sadd('sa', 'b', helper.isNumber(1));
+                client.sadd('sa', 'c', helper.isNumber(1));
 
-                client.sadd('sb', 'b', nodeAssert.isNumber(1));
-                client.sadd('sb', 'c', nodeAssert.isNumber(1));
-                client.sadd('sb', 'd', nodeAssert.isNumber(1));
+                client.sadd('sb', 'b', helper.isNumber(1));
+                client.sadd('sb', 'c', helper.isNumber(1));
+                client.sadd('sb', 'd', helper.isNumber(1));
 
-                client.sadd('sc', 'c', nodeAssert.isNumber(1));
-                client.sadd('sc', 'd', nodeAssert.isNumber(1));
-                client.sadd('sc', 'e', nodeAssert.isNumber(1));
+                client.sadd('sc', 'c', helper.isNumber(1));
+                client.sadd('sc', 'd', helper.isNumber(1));
+                client.sadd('sc', 'e', helper.isNumber(1));
 
                 client.sinter('sa', 'sb', 'sc', function (err, intersection) {
                     assert.equal(intersection.length, 1);

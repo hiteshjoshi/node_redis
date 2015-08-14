@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'hset' method", function () {
@@ -24,16 +24,16 @@ describe("The 'hset' method", function () {
                 var field = new Buffer("0123456789");
                 var value = new Buffer("abcdefghij");
 
-                client.HSET(hash, field, value, nodeAssert.isNumber(1));
-                client.HGET(hash, field, nodeAssert.isString(value.toString(), done));
+                client.HSET(hash, field, value, helper.isNumber(1));
+                client.HGET(hash, field, helper.isString(value.toString(), done));
             });
 
             it('handles an empty value', function (done) {
                 var field = new Buffer("0123456789");
                 var value = new Buffer(0);
 
-                client.HSET(hash, field, value, nodeAssert.isNumber(1));
-                client.HGET([hash, field], nodeAssert.isString("", done));
+                client.HSET(hash, field, value, helper.isNumber(1));
+                client.HGET([hash, field], helper.isString("", done));
             });
 
             it('handles empty key and value', function (done) {
@@ -41,7 +41,7 @@ describe("The 'hset' method", function () {
                 var value = new Buffer(0);
                 client.HSET([hash, field, value], function (err, res) {
                     assert.strictEqual(res, 1);
-                    client.HSET(hash, field, value, nodeAssert.isNumber(0, done));
+                    client.HSET(hash, field, value, helper.isNumber(0, done));
                 });
             });
 
@@ -52,7 +52,7 @@ describe("The 'hset' method", function () {
                 var field2 = "array"
                 var value2 = ["array contents"]
 
-                client.HMSET(hash, field1, value1, field2, value2, nodeAssert.isString("OK", done));
+                client.HMSET(hash, field1, value1, field2, value2, helper.isString("OK", done));
             });
 
             afterEach(function () {

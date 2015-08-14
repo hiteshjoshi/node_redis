@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'renamenx' method", function () {
@@ -20,18 +20,18 @@ describe("The 'renamenx' method", function () {
             });
 
             it('renames the key if target does not yet exist', function (done) {
-                client.set('foo', 'bar', nodeAssert.isString('OK'));
-                client.renamenx('foo', 'foo2', nodeAssert.isNumber(1));
-                client.exists('foo', nodeAssert.isNumber(0));
-                client.exists(['foo2'], nodeAssert.isNumber(1, done));
+                client.set('foo', 'bar', helper.isString('OK'));
+                client.renamenx('foo', 'foo2', helper.isNumber(1));
+                client.exists('foo', helper.isNumber(0));
+                client.exists(['foo2'], helper.isNumber(1, done));
             });
 
             it('does not rename the key if the target exists', function (done) {
-                client.set('foo', 'bar', nodeAssert.isString('OK'));
-                client.set('foo2', 'apple', nodeAssert.isString('OK'));
-                client.renamenx('foo', 'foo2', nodeAssert.isNumber(0));
-                client.exists('foo', nodeAssert.isNumber(1));
-                client.exists(['foo2'], nodeAssert.isNumber(1, done));
+                client.set('foo', 'bar', helper.isString('OK'));
+                client.set('foo2', 'apple', helper.isString('OK'));
+                client.renamenx('foo', 'foo2', helper.isNumber(0));
+                client.exists('foo', helper.isNumber(1));
+                client.exists(['foo2'], helper.isNumber(1, done));
             })
 
             afterEach(function () {

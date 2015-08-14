@@ -1,7 +1,6 @@
 var assert = require("assert");
 var config = require("./lib/config");
-var crypto = require("crypto");
-var nodeAssert = require("./lib/nodeify-assertions");
+var helper = require("./helper");
 var redis = config.redis;
 
 describe("publish/subscribe", function () {
@@ -57,7 +56,7 @@ describe("publish/subscribe", function () {
 
                 it('receives messages on subscribed channel', function (done) {
                     sub.on("subscribe", function (chnl, count) {
-                        pub.publish(channel, message, nodeAssert.isNumber(1));
+                        pub.publish(channel, message, helper.isNumber(1));
                     });
 
                     sub.on("message", function (chnl, msg) {
@@ -70,10 +69,10 @@ describe("publish/subscribe", function () {
                 });
 
                 it('receives messages if subscribe is called after unsubscribe', function (done) {
-                    if (!nodeAssert.serverVersionAtLeast(pub, [2, 6, 11])) return done();
+                    if (!helper.serverVersionAtLeast(pub, [2, 6, 11])) return done();
 
                     sub.once("subscribe", function (chnl, count) {
-                        pub.publish(channel, message, nodeAssert.isNumber(1));
+                        pub.publish(channel, message, helper.isNumber(1));
                     });
 
                     sub.on("message", function (chnl, msg) {
@@ -88,7 +87,7 @@ describe("publish/subscribe", function () {
                 });
 
                 it('handles SUB_UNSUB_MSG_SUB', function (done) {
-                    if (!nodeAssert.serverVersionAtLeast(pub, [2, 6, 11])) return done();
+                    if (!helper.serverVersionAtLeast(pub, [2, 6, 11])) return done();
 
                     sub.subscribe('chan8');
                     sub.subscribe('chan9');
@@ -100,7 +99,7 @@ describe("publish/subscribe", function () {
                 });
 
                 it('handles SUB_UNSUB_MSG_SUB', function (done) {
-                    if (!nodeAssert.serverVersionAtLeast(pub, [2, 6, 11])) return done();
+                    if (!helper.serverVersionAtLeast(pub, [2, 6, 11])) return done();
 
                     sub.psubscribe('abc*');
                     sub.subscribe('xyz');
@@ -190,7 +189,7 @@ describe("publish/subscribe", function () {
                     sub.subscribe(channel);
 
                     sub.on("unsubscribe", function (chnl, count) {
-                        pub.incr("foo", nodeAssert.isNumber(1, done));
+                        pub.incr("foo", helper.isNumber(1, done));
                     });
                 })
 
@@ -200,7 +199,7 @@ describe("publish/subscribe", function () {
 
                 it('executes callback when unsubscribe is called and there are no subscriptions', function (done) {
                     // test hangs on older versions of redis, so skip
-                    if (!nodeAssert.serverVersionAtLeast(pub, [2, 6, 11])) return done();
+                    if (!helper.serverVersionAtLeast(pub, [2, 6, 11])) return done();
 
                     pub.unsubscribe(function (err, results) {
                         assert.strictEqual(null, results);
@@ -216,7 +215,7 @@ describe("publish/subscribe", function () {
 
                 it('executes callback when punsubscribe is called and there are no subscriptions', function (done) {
                     // test hangs on older versions of redis, so skip
-                    if (!nodeAssert.serverVersionAtLeast(pub, [2, 6, 11])) return done();
+                    if (!helper.serverVersionAtLeast(pub, [2, 6, 11])) return done();
 
                     pub.punsubscribe(function (err, results) {
                         assert.strictEqual(null, results);

@@ -1,7 +1,7 @@
 var async = require('async');
 var assert = require('assert');
 var config = require("../lib/config");
-var nodeAssert = require('../lib/nodeify-assertions');
+var helper = require('../helper');
 var redis = config.redis;
 var uuid = require('uuid');
 
@@ -67,15 +67,15 @@ describe("The 'mset' method", function () {
                     describe("with valid parameters", function () {
                         it("sets the value correctly", function (done) {
                             client.mset(key, value, key2, value2, function (err, res) {
-                                nodeAssert.isNotError()(err, res);
+                                helper.isNotError()(err, res);
                                 async.parallel([function (next) {
                                     client.get(key, function (err, res) {
-                                        nodeAssert.isString(value)(err, res);
+                                        helper.isString(value)(err, res);
                                         next();
                                     });
                                 }, function (next) {
                                     client.get(key2, function (err, res) {
-                                        nodeAssert.isString(value2)(err, res);
+                                        helper.isString(value2)(err, res);
                                         next();
                                     });
                                 }], function (err) {
@@ -88,7 +88,7 @@ describe("The 'mset' method", function () {
                     describe("with undefined 'key' parameter and missing 'value' parameter", function () {
                         it("reports an error", function (done) {
                             client.mset(undefined, function (err, res) {
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                                 done();
                             });
                         });
@@ -97,7 +97,7 @@ describe("The 'mset' method", function () {
                     describe("with undefined 'key' and defined 'value' parameters", function () {
                         it("reports an error", function () {
                             client.mset(undefined, value, undefined, value2, function (err, res) {
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                                 done();
                             });
                         });
@@ -112,12 +112,12 @@ describe("The 'mset' method", function () {
                             setTimeout(function () {
                                 async.parallel([function (next) {
                                     client.get(key, function (err, res) {
-                                        nodeAssert.isString(value)(err, res);
+                                        helper.isString(value)(err, res);
                                         next();
                                     });
                                 }, function (next) {
                                     client.get(key2, function (err, res) {
-                                        nodeAssert.isString(value2)(err, res);
+                                        helper.isString(value2)(err, res);
                                         next();
                                     });
                                 }], function (err) {
@@ -134,7 +134,7 @@ describe("The 'mset' method", function () {
 
                             process.once('uncaughtException', function (err) {
                                 process.on('uncaughtException', mochaListener);
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                                 return done();
                             });
 
@@ -148,7 +148,7 @@ describe("The 'mset' method", function () {
 
                             process.once('uncaughtException', function (err) {
                                 process.on('uncaughtException', mochaListener);
-                                nodeAssert.isError()(err, null);
+                                helper.isError()(err, null);
                             });
 
                             client.mset(undefined, value, undefined, value2);

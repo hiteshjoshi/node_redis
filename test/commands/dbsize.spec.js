@@ -1,7 +1,7 @@
 var async = require('async');
 var assert = require('assert');
 var config = require("../lib/config");
-var nodeAssert = require('../lib/nodeify-assertions');
+var helper = require('../helper');
 var redis = config.redis;
 var uuid = require('uuid');
 
@@ -48,7 +48,7 @@ describe("The 'dbsize' method", function () {
                     client.once("error", done);
                     client.once("connect", function () {
                         client.flushdb(function (err, res) {
-                            nodeAssert.isString("OK")(err, res);
+                            helper.isString("OK")(err, res);
                             done();
                         });
                     });
@@ -60,8 +60,8 @@ describe("The 'dbsize' method", function () {
 
                 it("returns a zero db size", function (done) {
                     client.dbsize([], function (err, res) {
-                        nodeAssert.isNotError()(err, res);
-                        nodeAssert.isType.number()(err, res);
+                        helper.isNotError()(err, res);
+                        helper.isType.number()(err, res);
                         assert.strictEqual(res, 0, "Initial db size should be 0");
                         done();
                     });
@@ -72,13 +72,13 @@ describe("The 'dbsize' method", function () {
 
                     beforeEach(function (done) {
                         client.dbsize([], function (err, res) {
-                            nodeAssert.isType.number()(err, res);
+                            helper.isType.number()(err, res);
                             assert.strictEqual(res, 0, "Initial db size should be 0");
 
                             oldSize = res;
 
                             client.set(key, value, function (err, res) {
-                                nodeAssert.isNotError()(err, res);
+                                helper.isNotError()(err, res);
                                 done();
                             });
                         });
@@ -86,8 +86,8 @@ describe("The 'dbsize' method", function () {
 
                     it("returns a larger db size", function (done) {
                         client.dbsize([], function (err, res) {
-                            nodeAssert.isNotError()(err, res);
-                            nodeAssert.isType.positiveNumber()(err, res);
+                            helper.isNotError()(err, res);
+                            helper.isType.positiveNumber()(err, res);
                             assert.strictEqual(true, (oldSize < res), "Adding data should increase db size.");
                             done();
                         });

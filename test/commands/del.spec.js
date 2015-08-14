@@ -1,6 +1,6 @@
 var assert = require("assert");
 var config = require("../lib/config");
-var nodeAssert = require("../lib/nodeify-assertions");
+var helper = require("../helper");
 var redis = config.redis;
 
 describe("The 'del' method", function () {
@@ -21,19 +21,19 @@ describe("The 'del' method", function () {
 
             it('allows a single key to be deleted', function (done) {
                 client.set('foo', 'bar');
-                client.del('foo', nodeAssert.isNumber(1));
-                client.get('foo', nodeAssert.isNull(done));
+                client.del('foo', helper.isNumber(1));
+                client.get('foo', helper.isNull(done));
             });
 
             it('allows del to be called on a key that does not exist', function (done) {
-                client.del('foo', nodeAssert.isNumber(0, done));
+                client.del('foo', helper.isNumber(0, done));
             });
 
             it('allows multiple keys to be deleted', function (done) {
                 client.mset('foo', 'bar', 'apple', 'banana');
-                client.del('foo', 'apple', nodeAssert.isNumber(2));
-                client.get('foo', nodeAssert.isNull());
-                client.get('apple', nodeAssert.isNull(done));
+                client.del('foo', 'apple', helper.isNumber(2));
+                client.get('foo', helper.isNull());
+                client.get('apple', helper.isNull(done));
             });
 
             afterEach(function () {
