@@ -152,6 +152,35 @@ describe("A node_redis client", function () {
                             });
                         });
                     });
+
+                    describe('domain', function () {
+                        it('allows client to be executed from within domain', function (done) {
+                            var domain;
+
+                            try {
+                                domain = require('domain').create();
+                            } catch (err) {
+                                console.log("Skipping " + name + " because this version of node doesn't have domains.");
+                                return done();
+                            }
+
+                            if (domain) {
+                                domain.run(function () {
+                                    client.set('domain', 'value', function (err, res) {
+                                        assert.ok(process.domain);
+                                        var notFound = res.not.existing.thing; // ohhh nooooo
+                                    });
+                                });
+
+                                // this is the expected and desired behavior
+                                domain.on('error', function (err) {
+                                  domain.exit();
+                                  return done()
+                                });
+                            }
+                        })
+                    })
+
                 });
 
                 it('emits errors thrown from within an on("message") handler', function (done) {
@@ -506,6 +535,88 @@ describe("A node_redis client", function () {
                     });
                 });
             });
+
+            describe('retry_max_delay', function () {
+                var client;
+                var args = config.configureClient(parser, ip, {
+                    retry_max_delay: 1
+                });
+
+                it("sets upper bound on how long client waits before reconnecting", function (done) {
+                    var time = new Date().getTime()
+                    var reconnecting = false;
+
+                    client = redis.createClient.apply(redis.createClient, args);
+                    client.on('ready', function() {
+                        if (!reconnecting) {
+                            reconnecting = true;
+                            client.retry_delay = 1000;
+                            client.retry_backoff = 1;
+                            client.stream.end();
+                        } else {
+                            client.end();
+                            var lasted = new Date().getTime() - time;
+                            assert.ok(lasted < 1000);
+                            return done();
+                        }
+                    });
+                });
+            });
+
+            describe('enable_offline_queue', function () {
+                describe('true', function () {
+                    it("does not throw an error and enqueues operation", function (done) {
+                        var client = redis.createClient(9999, null, {
+                            max_attempts: 1,
+                            parser: parser
+                        });
+
+                        client.on('error', function(e) {
+                            // ignore, b/c expecting a "can't connect" error
+                        });
+
+                        return setTimeout(function() {
+                            client.set('foo', 'bar', function(err, result) {
+                                if (err) return done(err);
+                            });
+
+                            return setTimeout(function(){
+                                assert.strictEqual(client.offline_queue.length, 1);
+                                return done();
+                            }, 25);
+                        }, 50);
+                    });
+                });
+
+                describe('false', function () {
+                    it("does not throw an error and enqueues operation", function (done) {
+                        var client = redis.createClient(9999, null, {
+                            parser: parser,
+                            max_attempts: 1,
+                            enable_offline_queue: false
+                        });
+
+                        client.on('error', function() {
+                            // ignore, b/c expecting a "can't connect" error
+                        });
+
+                        assert.throws(function () {
+                            cli.set('foo', 'bar');
+                        });
+
+                        assert.doesNotThrow(function () {
+                            client.set('foo', 'bar', function (err) {
+                                // should callback with an error
+                                assert.ok(err);
+                                setTimeout(function () {
+                                    return done();
+                                }, 50);
+                            });
+                        });
+                    });
+                });
+            });
+
         });
     }
 
