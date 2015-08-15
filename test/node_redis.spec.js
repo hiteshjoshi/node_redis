@@ -215,6 +215,17 @@ describe("a node_redis client", function () {
                         client.set('foo', 'bar');
                     });
                 });
+
+                describe('utf8', function () {
+                    it('handles utf-8 keys', function (done) {
+                      var utf8_sample = "ಠ_ಠ";
+                      client.set(["utf8test", utf8_sample], helper.isString("OK"));
+                      client.get(["utf8test"], function (err, obj) {
+                          assert.strictEqual(utf8_sample, obj);
+                          return done(err);
+                      });
+                    });
+                });
             });
 
             describe('detect_buffers', function () {
